@@ -1,43 +1,28 @@
-import { nanoid } from '@reduxjs/toolkit';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { Button, Card, Form } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from 'redux/contactsSlice';
 
 export const ContactForm = () => {
-  const [data, setData] = useState({ name: '', number: '' });
+  const contacts = useSelector(state => state.contacts.items);
+  const [data, setData] = useState({ name: '', phone: '' });
   const dispatch = useDispatch();
-
-  // getFormData = data => {
-  //   const id = nanoid(8);
-  //   const obj = { id, ...data };
-
-  //   const normalizedName = data.name.toLowerCase();
-  //   const nameExists = this.state.contacts.some(
-  //     ({ name }) => name.toLowerCase() === normalizedName
-  //   );
-  //   if (nameExists) {
-  //     alert(`${data.name} is already in contacts.`);
-  //     return;
-  //   }
-  //   // ==================== /Task 5 ====================
-
-  //   this.setState(prevState => {
-  //     return { contacts: [obj, ...prevState.contacts] };
-  //   });
-  // };
 
   const handleSubmit = e => {
     e.preventDefault();
 
-    const id = nanoid(8);
-    const obj = { id, ...data };
+    const isInContacts = contacts.some(({ name }) => name === data.name);
+    if (isInContacts) {
+      alert('The contact with the name ' + data.name + ' already exists');
+      return;
+    }
 
-    dispatch(addContact(obj));
+    dispatch(addContact(data));
     resetForm();
   };
 
   const resetForm = () => {
-    setData({ name: '', number: '' });
+    setData({ name: '', phone: '' });
   };
 
   const handleInputChange = e => {
@@ -45,35 +30,36 @@ export const ContactForm = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: 'flex', flexDirection: 'column', width: 200 }}
-    >
-      <label htmlFor="name">Name</label>
-      <input
-        type="text"
-        name="name"
-        id="name"
-        value={data.name}
-        onChange={handleInputChange}
-        pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-        required
-      />
-      <label htmlFor="tel" style={{ marginTop: 20 }}>
-        Number
-      </label>
-      <input
-        type="tel"
-        name="number"
-        id="tel"
-        value={data.number}
-        onChange={handleInputChange}
-        pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
-        required
-      />
-      <button style={{ marginTop: 20, width: 'fit-content' }}>
-        Add contact
-      </button>
-    </form>
+    <Card style={{ width: '18rem' }}>
+      <Card.Body>
+        <Form>
+          <Form.Group id="name">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              type="text"
+              name="name"
+              value={data.name}
+              onChange={handleInputChange}
+              pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mt-4" id="tel">
+            <Form.Label>Number</Form.Label>
+            <Form.Control
+              type="tel"
+              name="phone"
+              value={data.phone}
+              onChange={handleInputChange}
+              pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
+              required
+            />
+          </Form.Group>
+          <Button onClick={handleSubmit} className="mt-4">
+            Add contact
+          </Button>
+        </Form>
+      </Card.Body>
+    </Card>
   );
 };

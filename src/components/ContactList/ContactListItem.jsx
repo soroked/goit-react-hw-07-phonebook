@@ -1,29 +1,49 @@
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/contactsSlice';
+// import { deleteContact } from 'redux/contactsSlice';
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg';
+import { deleteContact, fetchContacts } from 'redux/contactsSlice';
+import { useEffect } from 'react';
+import { Button, Card, Stack } from 'react-bootstrap';
 
 export const ContactListItem = () => {
-  const contacts = useSelector(state => state.contacts.contacts);
+  const contacts = useSelector(state => state.contacts.items);
   const filter = useSelector(state => state.filter.filter);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const filteredContacts = contacts.filter(({ name }) =>
     name.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
-    <>
-      {filteredContacts.map(({ id, name, number }) => (
+    <Stack gap={3}>
+      {filteredContacts?.map(({ id, name, phone }) => (
         <li key={id}>
-          <p style={{ display: 'inline-block', margin: 0, marginRight: 10 }}>
-            {name}: {number}
-          </p>
-          <button onClick={() => dispatch(deleteContact(id))}>
-            <DeleteIcon />
-          </button>
+          <Card>
+            <Card.Body>
+              <Stack direction="horizontal">
+                <div>
+                  <p style={{ margin: 0, marginRight: 10 }}>{name}</p>
+                  <p style={{ margin: 0, marginRight: 10 }}>{phone}</p>
+                </div>
+                <div className="ms-auto">
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => dispatch(deleteContact(id))}
+                  >
+                    <DeleteIcon />
+                  </Button>
+                </div>
+              </Stack>
+            </Card.Body>
+          </Card>
         </li>
       ))}
-    </>
+    </Stack>
   );
 };
