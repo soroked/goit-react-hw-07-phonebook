@@ -1,6 +1,5 @@
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-// import { deleteContact } from 'redux/contactsSlice';
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg';
 import { deleteContact, fetchContacts } from 'redux/contactsSlice';
 import { useEffect } from 'react';
